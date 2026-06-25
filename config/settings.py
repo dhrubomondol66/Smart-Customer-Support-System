@@ -12,8 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 from decouple import config
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,13 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-n6biuj%7lj4$zu1t2uvpqc1f!hafdl+xo7s2=m#7mnyx*#j5jf"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY  = config('SECRET_KEY')
+DEBUG       = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
 # Application definition
 
@@ -60,6 +56,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,15 +89,12 @@ ASGI_APPLICATION  = 'config.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
 DATABASES = {
-    'default': {
-        'ENGINE':   'django.db.backends.postgresql',
-        'NAME':     config('DB_NAME',     default='support_inbox'),
-        'USER':     config('DB_USER',     default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='postgres'),
-        'HOST':     config('DB_HOST',     default='localhost'),
-        'PORT':     config('DB_PORT',     default='5432'),
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
 
 AUTH_USER_MODEL = 'accounts.Agent'
@@ -168,11 +162,7 @@ CELERY_TASK_SERIALIZER   = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE          = 'UTC'
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',   # React dev server
-    'http://localhost:5173',   # Vite dev server
-    'http://127.0.0.1:3000',
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
