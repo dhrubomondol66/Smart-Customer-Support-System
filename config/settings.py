@@ -44,7 +44,6 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'channels',
     'drf_yasg',
-    'django_celery_beat',
 ]
 
 LOCAL_APPS = [
