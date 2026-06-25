@@ -17,9 +17,16 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+
+def health_check(request):
+    """Lightweight liveness probe used by Render's healthCheckPath."""
+    return JsonResponse({"status": "ok"})
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -33,6 +40,9 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Health check — no auth required (Render liveness probe)
+    path('api/health/', health_check, name='health-check'),
+
     # Admin
     path('admin/', admin.site.urls),
 
@@ -48,4 +58,4 @@ urlpatterns = [
 
     # Raw JSON schema → http://127.0.0.1:8000/swagger.json
     path('swagger.json', schema_view.without_ui(cache_timeout=0)),
-]
+]

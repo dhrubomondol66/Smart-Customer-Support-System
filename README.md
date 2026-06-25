@@ -17,7 +17,7 @@ A backend API system for managing customer support conversations — similar to 
 | Cache / Lock | Redis (django-redis) |
 | API Docs | drf-yasg (Swagger) |
 
----
+---____
 
 ## Project Structure
 

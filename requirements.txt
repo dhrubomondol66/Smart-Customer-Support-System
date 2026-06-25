@@ -1,18 +1,40 @@
-django>=4.2
-djangorestframework
-djangorestframework-simplejwt
-django-filter
-django-cors-headers
-django-redis
-celery
-redis
-channels
-channels-redis
-daphne
-psycopg2-binary
-python-decouple
-pytest-django
-drf-yasg
-gunicorn
-whitenoise
-dj-database-url
+# Core framework
+Django>=4.2,<5.3
+djangorestframework>=3.15,<4.0
+djangorestframework-simplejwt>=5.3,<6.0
+
+# Filters & CORS
+django-filter>=24.0
+django-cors-headers>=4.3,<5.0
+
+# Database
+psycopg2-binary>=2.9,<3.0
+dj-database-url>=2.2,<3.0
+
+# Cache & Channels
+django-redis>=5.4,<6.0
+channels>=4.1,<5.0
+channels-redis>=4.2,<5.0
+
+# ASGI server
+daphne>=4.1,<5.0
+
+# Celery
+celery>=5.4,<6.0
+redis>=5.0,<6.0
+django-celery-beat>=2.6,<3.0
+
+# Static files
+whitenoise>=6.7,<7.0
+
+# Config & utilities
+python-decouple>=3.8,<4.0
+
+# API docs
+drf-yasg>=1.21,<2.0
+
+# Production server (fallback / admin tasks)
+gunicorn>=22.0,<24.0
+
+# Testing
+pytest-django>=4.8,<5.0

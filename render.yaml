@@ -1,0 +1,113 @@
+
+# render.yaml — Render Blueprint
+# Docs: https://render.com/docs/blueprint-spec
+# ──────────────────────────────────────────────────────────────────────────────
+# PREREQUISITES on Render dashboard before deploying:
+#   1. Create a PostgreSQL database named "support_db"
+#   2. Create a Redis instance named "support_redis"
+#   3. Copy their internal connection URLs into the env vars below
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+  # ── Web / ASGI server (Daphne) ──────────────────────────────────────────────
+  - type: web
+    name: smart-customer-support
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "daphne -b 0.0.0.0 -p $PORT config.asgi:application"
+    healthCheckPath: /api/health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: support-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: support-redis
+          type: redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: WEB_CONCURRENCY
+        value: "2"
+
+  # ── Celery Worker ────────────────────────────────────────────────────────────
+  - type: worker
+    name: smart-customer-support-celery
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "celery -A config worker --loglevel=info --concurrency=2"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        fromService:
+          name: smart-customer-support
+          type: web
+          envVarKey: SECRET_KEY
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: support-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: support-redis
+          type: redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+
+  # ── Celery Beat ──────────────────────────────────────────────────────────────
+  - type: worker
+    name: smart-customer-support-celery-beat
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SECRET_KEY
+        fromService:
+          name: smart-customer-support
+          type: web
+          envVarKey: SECRET_KEY
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: support-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: support-redis
+          type: redis
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+
+databases:
+  - name: support-db
+    databaseName: support_inbox
+    user: support_user
+    plan: free
+
