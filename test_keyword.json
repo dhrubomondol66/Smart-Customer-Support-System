@@ -1,0 +1,32 @@
+{
+    "test_messages": [
+        { "message": "I want a refund" },
+        { "message": "Where is my shipping" },
+        { "message": "I want to cancel my order" },
+        { "message": "My payment is not working" },
+        { "message": "I forgot my password" },
+        { "message": "My device is not working and broken" },
+        { "message": "I want to talk to a human agent" },
+        { "message": "Thank you for your help" }
+    ],
+    "suggestion_engine": {
+        "refund":     "We are sorry for the inconvenience...",
+        "cancel":     "We understand you'd like to cancel...",
+        "shipping":   "Your order is on its way...",
+        "delay":      "We apologize for the delay...",
+        "password":   "To reset your password...",
+        "account":    "For account-related concerns...",
+        "payment":    "We're sorry you're facing a payment issue...",
+        "damaged":    "We sincerely apologize...",
+        "wrong":      "We're sorry you received the wrong item...",
+        "discount":   "We currently have ongoing promotions...",
+        "hello":      "Hello! How can we assist you today?",
+        "hi":         "Hi there! How can we help you?",
+        "help":       "We are here to help! Please describe your issue.",
+        "order":      "Please share your order ID and we will look into it.",
+        "late":       "We apologize for the inconvenience caused by the delay.",
+        "angry":      "We sincerely apologize for your experience.",
+        "waiting":    "We appreciate your patience, we are working on it.",
+        "complaint":  "We take all complaints seriously and will resolve this."
+    }
+}

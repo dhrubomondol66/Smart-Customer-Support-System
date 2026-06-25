@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+.env
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Django migrations cache (optional safety)
+**/migrations/__pycache__/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# Redis dump
+dump.rdb
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Pytest
+.pytest_cache/
+
+# Mypy
+.mypy_cache/
+
+# Node (if frontend added later)
+node_modules/
+
+# Docker override
+docker-compose.override.yml

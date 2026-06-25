@@ -1,0 +1,574 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Smart Customer Support Inbox API",
+    "description": "API documentation for Support Inbox Engine",
+    "contact": {
+      "email": "admin@test.com"
+    },
+    "version": "v1"
+  },
+  "host": "127.0.0.1:8000",
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT token. Format: Bearer \u003Ctoken\u003E"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/auth/login/": {
+      "post": {
+        "operationId": "auth_login_create",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login response",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access": {
+                  "type": "string"
+                },
+                "refresh": {
+                  "type": "string"
+                },
+                "agent_id": {
+                  "type": "integer"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      },
+      "parameters": []
+    },
+    "/auth/refresh/": {
+      "post": {
+        "operationId": "auth_refresh_create",
+        "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TokenRefresh"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/TokenRefresh"
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      },
+      "parameters": []
+    },
+    "/conversations/": {
+      "get": {
+        "operationId": "conversations_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search by customer name",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number",
+            "type": "integer"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by status",
+            "type": "string",
+            "enum": [
+              "open",
+              "closed",
+              "pending"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "required": [
+                "count",
+                "results"
+              ],
+              "type": "object",
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "next": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "previous": {
+                  "type": "string",
+                  "format": "uri",
+                  "x-nullable": true
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ConversationList"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": []
+    },
+    "/conversations/{id}/lock/": {
+      "post": {
+        "operationId": "conversations_lock_create",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lock status response",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "conversation_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "423": {
+            "description": "Lock occupied",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "locked_by": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/conversations/{id}/lock/release/": {
+      "delete": {
+        "operationId": "conversations_lock_release_delete",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lock released successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized to release lock",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/conversations/{id}/lock/status/": {
+      "get": {
+        "operationId": "conversations_lock_status_list",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/LockStatus"
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/conversations/{id}/messages/": {
+      "get": {
+        "operationId": "conversations_messages_list",
+        "description": "",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "A search term.",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Message"
+              }
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/conversations/{id}/messages/send/": {
+      "post": {
+        "operationId": "conversations_messages_send_create",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SendMessage"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    },
+    "/conversations/{id}/suggest-reply/": {
+      "post": {
+        "operationId": "conversations_suggest-reply_create",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SuggestReply"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI Suggestion",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "suggestion": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "conversations"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Login": {
+      "required": [
+        "email",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "email": {
+          "title": "Email",
+          "type": "string",
+          "format": "email",
+          "minLength": 1
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "TokenRefresh": {
+      "required": [
+        "refresh"
+      ],
+      "type": "object",
+      "properties": {
+        "refresh": {
+          "title": "Refresh",
+          "type": "string",
+          "minLength": 1
+        },
+        "access": {
+          "title": "Access",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        }
+      }
+    },
+    "ConversationList": {
+      "required": [
+        "customer_name"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "customer_name": {
+          "title": "Customer name",
+          "type": "string",
+          "maxLength": 200,
+          "minLength": 1
+        },
+        "last_message": {
+          "title": "Last message",
+          "type": "string",
+          "readOnly": true
+        },
+        "status": {
+          "title": "Status",
+          "type": "string",
+          "enum": [
+            "open",
+            "closed",
+            "pending"
+          ]
+        },
+        "created_at": {
+          "title": "Created at",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "LockStatus": {
+      "required": [
+        "conversation_id",
+        "locked",
+        "owner_agent_id",
+        "ttl_seconds"
+      ],
+      "type": "object",
+      "properties": {
+        "conversation_id": {
+          "title": "Conversation id",
+          "type": "integer"
+        },
+        "locked": {
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "owner_agent_id": {
+          "title": "Owner agent id",
+          "type": "string",
+          "minLength": 1,
+          "x-nullable": true
+        },
+        "ttl_seconds": {
+          "title": "Ttl seconds",
+          "type": "integer"
+        }
+      }
+    },
+    "Message": {
+      "required": [
+        "sender",
+        "message"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "ID",
+          "type": "integer",
+          "readOnly": true
+        },
+        "sender": {
+          "title": "Sender",
+          "type": "string",
+          "enum": [
+            "customer",
+            "agent"
+          ]
+        },
+        "message": {
+          "title": "Message",
+          "type": "string",
+          "minLength": 1
+        },
+        "timestamp": {
+          "title": "Timestamp",
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "SendMessage": {
+      "required": [
+        "message"
+      ],
+      "type": "object",
+      "properties": {
+        "message": {
+          "title": "Message",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "SuggestReply": {
+      "required": [
+        "message"
+      ],
+      "type": "object",
+      "properties": {
+        "message": {
+          "title": "Message",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

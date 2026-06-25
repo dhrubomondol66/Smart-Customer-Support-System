@@ -1,0 +1,14 @@
+django>=4.2
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+django-cors-headers
+django-redis
+celery
+redis
+channels
+channels-redis
+daphne
+psycopg2-binary
+python-decouple
+pytest-django
