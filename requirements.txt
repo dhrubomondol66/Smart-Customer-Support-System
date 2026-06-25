@@ -12,3 +12,6 @@ daphne
 psycopg2-binary
 python-decouple
 pytest-django
+drf-yasg
+gunicorn 
+whitenoise
